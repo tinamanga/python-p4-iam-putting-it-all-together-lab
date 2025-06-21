@@ -29,7 +29,6 @@ class TestUser:
                     """ named her the seventh-greatest female screen legend """ + \
                     """of Classic Hollywood cinema."""
             )
-
             user.password_hash = "whosafraidofvirginiawoolf"
             
             db.session.add(user)
@@ -68,15 +67,15 @@ class TestUser:
                 db.session.commit()
 
     def test_requires_unique_username(self):
-        '''requires each record to have a username.'''
+        '''requires each record to have a unique username.'''
 
         with app.app_context():
 
             User.query.delete()
             db.session.commit()
 
-            user_1 = User(username="Ben")
-            user_2 = User(username="Ben")
+            user_1 = User(username="Ben", password_hash="pw1")
+            user_2 = User(username="Ben", password_hash="pw2")
 
             with pytest.raises(IntegrityError):
                 db.session.add_all([user_1, user_2])
@@ -91,6 +90,7 @@ class TestUser:
             db.session.commit()
 
             user = User(username="Prabhdip")
+            user.password_hash = "secure_password"  # Fix: set password hash
 
             recipe_1 = Recipe(
                 title="Delicious Shed Ham",
@@ -103,7 +103,7 @@ class TestUser:
                     """ smallness northward situation few her certainty""" + \
                     """ something.""",
                 minutes_to_complete=60,
-                )
+            )
             recipe_2 = Recipe(
                 title="Hasty Party Ham",
                 instructions="""As am hastily invited settled at limited""" + \
@@ -113,7 +113,7 @@ class TestUser:
                              """ unpacked be advanced at. Confined in declared""" + \
                              """ marianne is vicinity.""",
                 minutes_to_complete=30,
-                )
+            )
 
             user.recipes.append(recipe_1)
             user.recipes.append(recipe_2)
